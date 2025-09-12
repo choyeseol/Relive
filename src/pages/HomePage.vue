@@ -290,7 +290,8 @@ ion-button {
 /* ion-fab-button 기본 그림자 제거 */
 ion-fab-button {
   box-shadow: none !important;
-  border: 1px solid #e4e4e4;
+  --background: #229bff;
+  border: none;
 }
 
 /* ion-item의 기본 스타일 오버라이드 */
