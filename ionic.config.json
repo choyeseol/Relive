@@ -1,0 +1,7 @@
+{
+  "name": "Relive",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}

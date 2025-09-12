@@ -1,0 +1,256 @@
+<template>
+  <ion-page>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>독후감</ion-title>
+        <ion-buttons slot="end">
+          <ion-button @click="refreshReviews" :disabled="isLoading">
+            <ion-icon :icon="refresh" slot="icon-only"></ion-icon>
+          </ion-button>
+          <ion-button router-link="/add-review">
+            <ion-icon :icon="add" slot="icon-only"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content :fullscreen="true">
+      <ion-header collapse="condense">
+        <ion-toolbar>
+          <ion-title size="large">독후감</ion-title>
+        </ion-toolbar>
+      </ion-header>
+
+      <!-- PWA 설치 프롬프트 -->
+      <InstallPrompt />
+
+      <!-- 통계 카드 -->
+      <ion-card class="stats-card">
+        <ion-card-content>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <div class="stat-number">{{ totalReviews }}</div>
+              <div class="stat-label">총 독후감</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">{{ averageRating }}</div>
+              <div class="stat-label">평균 평점</div>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- 검색 및 필터 -->
+      <ion-card class="search-card">
+        <ion-card-content>
+          <ion-searchbar
+            v-model="searchQuery"
+            placeholder="제목, 저자, 내용으로 검색..."
+            show-clear-button="focus"
+            @ion-input="handleSearch"
+          ></ion-searchbar>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- 로딩 상태 -->
+      <div v-if="isLoading" class="loading-container">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>독후감을 불러오는 중...</p>
+      </div>
+
+      <!-- 에러 상태 -->
+      <ion-card v-if="error" class="error-card">
+        <ion-card-content>
+          <div class="error-content">
+            <ion-icon :icon="alertCircle" class="error-icon"></ion-icon>
+            <p>{{ error }}</p>
+            <ion-button fill="outline" @click="loadReviews">다시 시도</ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- 독후감 목록 -->
+      <div v-if="!isLoading && !error">
+        <div v-if="filteredReviews.length === 0" class="empty-state">
+          <ion-icon :icon="bookOutline" class="empty-icon"></ion-icon>
+          <h3>독후감이 없습니다</h3>
+          <p>첫 번째 독후감을 작성해보세요!</p>
+          <ion-button router-link="/add-review" fill="outline">
+            작성하기
+          </ion-button>
+        </div>
+
+        <BookReviewCard
+          v-for="review in filteredReviews"
+          :key="review.id"
+          :review="review"
+          @click="viewReview"
+        />
+      </div>
+
+      <!-- Floating Action Button -->
+      <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button router-link="/add-review">
+          <ion-icon :icon="add"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+    </ion-content>
+  </ion-page>
+</template>
+
+<script setup lang="ts">
+import { ref, onMounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import {
+  IonPage,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonButtons,
+  IonButton,
+  IonIcon,
+  IonCard,
+  IonCardContent,
+  IonSearchbar,
+  IonSpinner,
+  IonFab,
+  IonFabButton,
+} from '@ionic/vue';
+import {
+  add,
+  refresh,
+  alertCircle,
+  bookOutline,
+} from 'ionicons/icons';
+
+import { useBookReviewStore } from '@/stores/bookReviewStore';
+import InstallPrompt from '@/components/InstallPrompt.vue';
+import BookReviewCard from '@/components/BookReviewCard.vue';
+import type { BookReview } from '@/types/bookReview';
+
+const router = useRouter();
+const {
+  reviews,
+  isLoading,
+  error,
+  totalReviews,
+  averageRating,
+  loadReviews,
+  searchReviews,
+} = useBookReviewStore();
+
+const searchQuery = ref('');
+
+const filteredReviews = computed(() => {
+  if (!searchQuery.value) {
+    return reviews.value;
+  }
+  return searchReviews({ search: searchQuery.value });
+});
+
+// 검색은 computed property에서 자동으로 처리됨
+const handleSearch = () => {
+};
+
+const viewReview = (review: BookReview) => {
+  router.push(`/review/${review.id}`);
+};
+
+const refreshReviews = async () => {
+  await loadReviews();
+};
+
+onMounted(async () => {
+  await loadReviews();
+});
+</script>
+
+<style scoped>
+.stats-card {
+  margin: 16px;
+  border-radius: 12px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--ion-color-primary);
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: var(--ion-color-medium);
+}
+
+.search-card {
+  margin: 0 16px 16px 16px;
+  border-radius: 12px;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.loading-container p {
+  margin-top: 16px;
+  color: var(--ion-color-medium);
+}
+
+.error-card {
+  margin: 16px;
+  border-radius: 12px;
+}
+
+.error-content {
+  text-align: center;
+  padding: 20px;
+}
+
+.error-icon {
+  font-size: 48px;
+  color: var(--ion-color-danger);
+  margin-bottom: 16px;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 64px;
+  color: var(--ion-color-light);
+  margin-bottom: 16px;
+}
+
+.empty-state h3 {
+  margin: 0 0 8px 0;
+  color: var(--ion-color-medium);
+}
+
+.empty-state p {
+  margin: 0 0 24px 0;
+  color: var(--ion-color-medium);
+}
+</style>
