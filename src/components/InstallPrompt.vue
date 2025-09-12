@@ -11,7 +11,7 @@
           @click="handleInstall"
           :disabled="isInstalling"
         >
-          <ion-icon :icon="downloadOutline" slot="start"></ion-icon>
+          <ion-icon :icon="downloadOutline" slot="start" class="install-icon"></ion-icon>
           {{ isInstalling ? '설치 중...' : '설치하기' }}
         </ion-button>
       </div>
@@ -55,7 +55,7 @@ const handleInstall = async () => {
 
 .install-icon {
   font-size: 24px;
-  color: var(--ion-color-primary);
+  color: #229bff;
 }
 
 .install-text {
@@ -72,6 +72,12 @@ const handleInstall = async () => {
   margin: 0;
   font-size: 14px;
   color: var(--ion-color-medium);
+}
+
+/* 설치하기 버튼 스타일링 */
+.install-prompt ion-button {
+  --color: #229bff;
+  --border-color: #229bff;
 }
 
 @media (max-width: 768px) {
