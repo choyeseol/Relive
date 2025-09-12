@@ -107,7 +107,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, onActivated, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import {
   IonPage,
@@ -120,7 +120,6 @@ import {
   IonIcon,
   IonCard,
   IonCardContent,
-  IonSearchbar,
   IonSpinner,
   IonFab,
   IonFabButton,
@@ -176,6 +175,10 @@ const refreshReviews = async () => {
 };
 
 onMounted(async () => {
+  await loadReviews();
+});
+
+onActivated(async () => {
   await loadReviews();
 });
 </script>

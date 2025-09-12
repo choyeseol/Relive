@@ -69,7 +69,7 @@
               <ion-icon
                 v-for="star in 5"
                 :key="star"
-                :icon="star <= form.rating ? star : starOutline"
+                :icon="star <= form.rating ? 'star' : starOutline"
                 :class="{ 'filled': star <= form.rating }"
                 class="rating-star"
                 @click="setRating(star)"
@@ -183,7 +183,7 @@ import {
   IonChip,
   IonToast,
 } from '@ionic/vue';
-import { star, starOutline, close } from 'ionicons/icons';
+import { starOutline, close } from 'ionicons/icons';
 
 import { useBookReviewStore } from '@/stores/bookReviewStore';
 import { getCurrentDateString } from '@/utils/dateUtils';
@@ -263,7 +263,11 @@ const saveReview = async () => {
 
   try {
     await addReview(form.value);
-    router.push('/');
+    router.push('/').then(() => {
+      setTimeout(() => {
+        window.location.reload();
+      }, 0);
+    });
   } catch (err) {
     console.error('독후감 저장 실패:', err);
   }
@@ -333,14 +337,6 @@ onMounted(() => {
 .card-title {
   font-size: 14px;
   font-weight: 600;
-}
-
-/* 모든 그림자 효과 제거하고 stroke로 변경 */
-.form-card {
-  margin: 16px;
-  border-radius: 12px;
-  box-shadow: none !important;
-  border: 1px solid #e4e4e4;
 }
 
 /* ion-card 기본 그림자 제거 */
