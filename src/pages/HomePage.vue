@@ -47,7 +47,6 @@
             <ion-input
               v-model="searchQuery"
               placeholder="제목, 저자, 내용으로 검색..."
-              @ion-input="handleSearch"
               class="search-input"
             ></ion-input>
             <ion-icon 
@@ -81,10 +80,15 @@
       <div v-if="!isLoading && !error">
         <div v-if="filteredReviews.length === 0" class="empty-state">
           <ion-icon :icon="bookOutline" class="empty-icon"></ion-icon>
-          <h3>독후감이 없습니다</h3>
-          <p>첫 번째 독후감을 작성해보세요!</p>
-          <ion-button router-link="/add-review" fill="outline">
+          <h3 v-if="!searchQuery">독후감이 없습니다</h3>
+          <h3 v-else>검색 결과가 없습니다</h3>
+          <p v-if="!searchQuery">첫 번째 독후감을 작성해보세요!</p>
+          <p v-else>"{{ searchQuery }}"에 대한 검색 결과가 없습니다.</p>
+          <ion-button router-link="/add-review" fill="outline" v-if="!searchQuery">
             작성하기
+          </ion-button>
+          <ion-button @click="clearSearch" fill="outline" v-else>
+            검색 초기화
           </ion-button>
         </div>
 
@@ -92,7 +96,6 @@
           v-for="review in filteredReviews"
           :key="review.id"
           :review="review"
-          @click="viewReview"
         />
       </div>
 
@@ -108,7 +111,6 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onActivated, computed } from 'vue';
-import { useRouter } from 'vue-router';
 import {
   IonPage,
   IonHeader,
@@ -136,9 +138,6 @@ import {
 import { useBookReviewStore } from '@/stores/bookReviewStore';
 import InstallPrompt from '@/components/InstallPrompt.vue';
 import BookReviewCard from '@/components/BookReviewCard.vue';
-import type { BookReview } from '@/types/bookReview';
-
-const router = useRouter();
 const {
   reviews,
   isLoading,
@@ -155,20 +154,15 @@ const filteredReviews = computed(() => {
   if (!searchQuery.value) {
     return reviews.value;
   }
-  return searchReviews({ search: searchQuery.value });
+  
+  const results = searchReviews({ search: searchQuery.value });
+  return results;
 });
-
-// 검색은 computed property에서 자동으로 처리됨
-const handleSearch = () => {
-};
 
 const clearSearch = () => {
   searchQuery.value = '';
 };
 
-const viewReview = (review: BookReview) => {
-  router.push(`/review/${review.id}`);
-};
 
 const refreshReviews = async () => {
   await loadReviews();

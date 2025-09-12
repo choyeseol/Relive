@@ -1,5 +1,5 @@
 <template>
-  <ion-card class="review-card" @click="$emit('click', review)">
+  <ion-card class="review-card">
     <ion-card-content>
       <div class="review-header">
         <div class="book-info">
@@ -40,7 +40,7 @@
 
 <script setup lang="ts">
 import { IonCard, IonCardContent, IonIcon, IonChip } from '@ionic/vue';
-import { star, starOutline } from 'ionicons/icons';
+import { starOutline } from 'ionicons/icons';
 import { formatDate } from '@/utils/dateUtils';
 import type { BookReview } from '@/types/bookReview';
 
@@ -48,21 +48,12 @@ defineProps<{
   review: BookReview;
 }>();
 
-defineEmits<{
-  click: [review: BookReview];
-}>();
 </script>
 
 <style scoped>
 .review-card {
   margin: 8px 16px;
   border-radius: 12px;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.review-card:hover {
-  transform: translateY(-2px);
 }
 
 .review-header {
@@ -112,6 +103,7 @@ defineEmits<{
   color: var(--ion-color-dark);
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
