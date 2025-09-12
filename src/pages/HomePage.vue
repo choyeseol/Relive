@@ -42,14 +42,22 @@
 
       <!-- 검색 및 필터 -->
       <ion-card class="search-card">
-        <ion-card-content>
-          <ion-searchbar
-            v-model="searchQuery"
-            placeholder="제목, 저자, 내용으로 검색..."
-            show-clear-button="focus"
-            @ion-input="handleSearch"
-          ></ion-searchbar>
-        </ion-card-content>
+          <ion-item class="search-item">
+            <ion-icon :icon="search" slot="start" class="search-icon"></ion-icon>
+            <ion-input
+              v-model="searchQuery"
+              placeholder="제목, 저자, 내용으로 검색..."
+              @ion-input="handleSearch"
+              class="search-input"
+            ></ion-input>
+            <ion-icon 
+              v-if="searchQuery" 
+              :icon="close" 
+              slot="end" 
+              class="clear-icon"
+              @click="clearSearch"
+            ></ion-icon>
+          </ion-item>
       </ion-card>
 
       <!-- 로딩 상태 -->
@@ -122,6 +130,8 @@ import {
   refresh,
   alertCircle,
   bookOutline,
+  search,
+  close,
 } from 'ionicons/icons';
 
 import { useBookReviewStore } from '@/stores/bookReviewStore';
@@ -153,6 +163,10 @@ const filteredReviews = computed(() => {
 const handleSearch = () => {
 };
 
+const clearSearch = () => {
+  searchQuery.value = '';
+};
+
 const viewReview = (review: BookReview) => {
   router.push(`/review/${review.id}`);
 };
@@ -167,11 +181,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.stats-card {
-  margin: 16px;
-  border-radius: 12px;
-}
-
 .stats-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -184,19 +193,14 @@ onMounted(async () => {
 
 .stat-number {
   font-size: 24px;
-  font-weight: 700;
-  color: var(--ion-color-primary);
+  font-weight: 600;
+  color: #229bff;
   margin-bottom: 4px;
 }
 
 .stat-label {
   font-size: 14px;
   color: var(--ion-color-medium);
-}
-
-.search-card {
-  margin: 0 16px 16px 16px;
-  border-radius: 12px;
 }
 
 .loading-container {
@@ -213,10 +217,6 @@ onMounted(async () => {
   color: var(--ion-color-medium);
 }
 
-.error-card {
-  margin: 16px;
-  border-radius: 12px;
-}
 
 .error-content {
   text-align: center;
@@ -252,5 +252,93 @@ onMounted(async () => {
 .empty-state p {
   margin: 0 0 24px 0;
   color: var(--ion-color-medium);
+}
+
+/* 모든 그림자 효과 제거하고 stroke로 변경 */
+.stats-card {
+  margin: 16px;
+  border-radius: 12px;
+  box-shadow: none !important;
+  border: 1px solid #e4e4e4;
+}
+
+.search-card {
+  margin: 0 16px 16px 16px;
+  border-radius: 12px;
+  box-shadow: none !important;
+  border: 1px solid #e4e4e4;
+}
+
+.error-card {
+  margin: 16px;
+  border-radius: 12px;
+  box-shadow: none !important;
+  border: 1px solid #e4e4e4;
+}
+
+/* ion-card 기본 그림자 제거 */
+ion-card {
+  box-shadow: none !important;
+  border: 1px solid #e4e4e4;
+}
+
+/* ion-button 기본 그림자 제거 */
+ion-button {
+  box-shadow: none !important;
+}
+
+/* ion-fab-button 기본 그림자 제거 */
+ion-fab-button {
+  box-shadow: none !important;
+  border: 1px solid #e4e4e4;
+}
+
+/* ion-item의 기본 스타일 오버라이드 */
+.search-item {
+  --border-style: none;
+  --border-width: 0;
+  --inner-border-width: 0;
+  --border-color: transparent;
+}
+
+.search-icon {
+  color: #b3b3b3;
+  margin-right: 8px;
+}
+
+.clear-icon {
+  color: var(--ion-color-medium);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.clear-icon:hover {
+  background-color: var(--ion-color-light);
+}
+
+/* 작성하기 버튼 스타일 */
+.empty-state ion-button {
+    font-size: 14px;
+  --color: #229bff;
+  --border-color: #229bff;
+}
+
+/* ion-header ion-toolbar 기본 그림자 제거 */
+ion-header ion-toolbar {
+  box-shadow: none !important;
+  border-bottom: 1px solid #e4e4e4;
+}
+
+/* 전역 그림자 효과 제거 */
+:root {
+  --ion-shadow-color: transparent;
+  --ion-box-shadow: none;
+}
+
+/* 모든 요소의 그림자 제거 */
+* {
+  box-shadow: none !important;
 }
 </style>
