@@ -6,9 +6,10 @@
           <h3>앱으로 설치하기</h3>
           <p>홈 화면에 추가하여 더 편리하게 사용하세요!</p>
         </div>
+        <!-- 설치하기 버튼 누르면 handleInstall에서 installApp 함수 호출 -->
         <ion-button 
           fill="outline" 
-          @click="handleInstall"
+          @click="handleInstall" 
           :disabled="isInstalling"
         >
           <ion-icon :icon="downloadOutline" slot="start" class="install-icon"></ion-icon>

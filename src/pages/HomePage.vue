@@ -21,7 +21,7 @@
         </ion-toolbar>
       </ion-header>
 
-      <!-- PWA 설치 프롬프트 -->
+      <!-- PWA 설치 프롬프트 불러오기-->
       <InstallPrompt />
 
       <!-- 통계 카드 -->
